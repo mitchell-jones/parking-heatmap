@@ -63,19 +63,19 @@ display(output)
 
 # #### Output Data to Postgres on Heroku
 
-# In[1]:
+# In[10]:
 
 
 import os
 
 
-# In[2]:
+# In[11]:
 
 
 db_url = os.environ['DATABASE_URL']
 
 
-# In[3]:
+# In[18]:
 
 
 #import the relevant sql library 
