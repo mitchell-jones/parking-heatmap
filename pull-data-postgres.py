@@ -56,12 +56,6 @@ output = pd.DataFrame(json_data)
 output['time'] = dt_string
 
 
-# In[9]:
-
-
-display(output)
-
-
 # #### Output Data to Postgres on Heroku
 
 # In[10]:
