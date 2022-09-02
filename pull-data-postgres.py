@@ -71,8 +71,10 @@ import os
 
 # In[11]:
 
-
-db_url = os.environ['DATABASE_URL_1']
+try:
+	db_url = os.getenv("DATABASE_URL_1")
+except:
+	print('Failed at OS Environment Vars Retrieval')
 
 
 # In[18]:
