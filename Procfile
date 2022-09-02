@@ -1,0 +1,1 @@
+worker: python pull-data-postgres.py
