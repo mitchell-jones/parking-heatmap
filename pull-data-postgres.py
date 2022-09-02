@@ -72,7 +72,7 @@ import os
 # In[11]:
 
 
-db_url = os.environ['DATABASE_URL']
+db_url = os.environ['DATABASE_URL_1']
 
 
 # In[18]:
