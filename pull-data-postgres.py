@@ -4,6 +4,7 @@
 # In[1]:
 
 
+print('startup')
 import json
 import pandas as pd
 from datetime import datetime
@@ -54,6 +55,13 @@ output = pd.DataFrame(json_data)
 
 output['time'] = dt_string
 
+
+# In[9]:
+
+
+display(output)
+
+
 # #### Output Data to Postgres on Heroku
 
 # In[10]:
@@ -64,20 +72,25 @@ import os
 
 # In[11]:
 
+
 try:
-	db_url = os.getenv("DATABASE_URL_1")
+    db_url = os.environ['DATABASE_URL_1']
 except:
-	print('Failed at OS Environment Vars Retrieval')
+    print('DB-URL not retrieved from environment correctly.')
+print(db_url)
 
 
 # In[18]:
 
 
-#import the relevant sql library 
-from sqlalchemy import create_engine
-# link to your database
-engine = create_engine(db_url, echo = False)
-# attach the data frame (df) to the database with a name of the 
-# table; the name can be whatever you like
-output.to_sql('parkingdata', con = engine, if_exists='append')
+try:
+    #import the relevant sql library 
+    from sqlalchemy import create_engine
+    # link to your database
+    engine = create_engine(db_url, echo = False)
+    # attach the data frame (df) to the database with a name of the 
+    # table; the name can be whatever you like
+    output.to_sql('parkingdata', con = engine, if_exists='append')
+except:
+    print("output to db unsuccessful.")
 
