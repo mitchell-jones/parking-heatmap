@@ -1,1 +1,1 @@
-worker: python pull-data-postgres.py
+worker: python pull-data-final.py
