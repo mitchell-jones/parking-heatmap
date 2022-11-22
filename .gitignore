@@ -154,3 +154,4 @@ config.yaml
 *.csv
 *.yaml
 *.twb
+*.toml

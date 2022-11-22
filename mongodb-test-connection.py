@@ -9,6 +9,7 @@ from omegaconf import DictConfig
 import hydra
 import pandas as pd
 import pymongo
+import certifi
 
 @hydra.main(version_base=None, config_path=".", config_name="config")
 def my_app(cfg: DictConfig):
@@ -19,7 +20,7 @@ def my_app(cfg: DictConfig):
     
     url = f"mongodb+srv://{user}:{password}@cluster0.ggajmmx.mongodb.net/?retryWrites=true&w=majority"
     
-    client = pymongo.MongoClient(url)
+    client = pymongo.MongoClient(url, tlsCAFile=certifi.where())
     
     data = pd.read_csv('dataclips_mdbxmiekltedbtruzqcdxqmqxfja (1).csv')
     

@@ -13,9 +13,10 @@ from datetime import datetime
 from sseclient import SSEClient
 import json
 from time import sleep
+import certifi
 
 def update_data(mycol):
-    interval = 15
+    interval = 1 # Should be 15
     while True:
         print('Checking!')
         if datetime.today().minute % interval == 0:
@@ -55,7 +56,7 @@ def my_app(cfg: DictConfig):
     
     url = f"mongodb+srv://{user}:{password}@cluster0.ggajmmx.mongodb.net/?retryWrites=true&w=majority"
     
-    client = pymongo.MongoClient(url)
+    client = pymongo.MongoClient(url, tlsCAFile=certifi.where())
     
     mydb = client["personalprojects"]
     

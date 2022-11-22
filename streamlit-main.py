@@ -1,31 +1,34 @@
 import streamlit as st
-from omegaconf import DictConfig
-import hydra
 import pandas as pd
 import pymongo
+import certifi
 
-@hydra.main(version_base=None, config_path=".", config_name="config")
-def extract_data(cfg: DictConfig):
-    user = cfg['auth']['user']
-    
-    password = cfg['auth']['password']
-    
+def get_client():
+    # Get user, pass
+    user = st.secrets.auth.user
+    password = st.secrets.auth.password
+
+    # MongoDB Auth
     url = f"mongodb+srv://{user}:{password}@cluster0.ggajmmx.mongodb.net/?retryWrites=true&w=majority"
-    
-    client = pymongo.MongoClient(url)
-    
-    data = pd.read_csv('dataclips_mdbxmiekltedbtruzqcdxqmqxfja (1).csv')
-    
+    client = pymongo.MongoClient(url, tlsCAFile=certifi.where())
+
+    return client
+
+def load_data():
+    client = get_client()
+
+    # Loading data
     mydb = client["personalprojects"]
-    
     mycol = mydb["parkingdata"]
-    
     data = mycol.find()
     
-    extracted_data = pd.DataFrame(list(data))
+    # Convert data to DataFrame
+    imported_data = pd.DataFrame(list(data))
     
-    return extracted_data
+    return imported_data
 
 if __name__ == "__main__":
-    data = extract_data()
+    data = load_data()
+    del data['_id']
+    # data = data.rename({'_id':'id'}, axis =1)
     st.write(data)
