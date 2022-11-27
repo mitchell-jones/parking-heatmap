@@ -24,11 +24,10 @@ def load_data():
     
     # Convert data to DataFrame
     imported_data = pd.DataFrame(list(data))
-    
+    del imported_data['_id']
     return imported_data
 
 if __name__ == "__main__":
     data = load_data()
-    del data['_id']
     # data = data.rename({'_id':'id'}, axis =1)
     st.write(data)
