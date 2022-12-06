@@ -122,24 +122,28 @@ def page2():
         min_value = min_date, max_value = max_date)
 
     filtered = filtered[(filtered.date > begin_date) & (filtered.date < end_date)]
-
-    sns.set_theme(style="darkgrid")
-    fig = plt.figure(figsize = (11.7,7))
-    plot = sns.lineplot(data = filtered, x = filtered.datetime, y = 'percentAvailable', hue = 'name')
-    plot.set(xlabel='Time', ylabel='Percent Available', title = 'Deck Availability by Time')
-    plot.xaxis.set_major_locator(ticker.MultipleLocator(1))
-    plot.set_xticklabels(plot.get_xticklabels(), rotation=40, ha="right")
-    st.pyplot(fig)
-    
-    fig = plt.figure(figsize = (11.7,7))
-    filtered['hour'] = filtered.datetime.dt.hour
-    filtered['dayofweek'] = filtered.datetime.dt.day_name()
-    heat = filtered.pivot_table('percentAvailable', ['dayofweek'], 'hour')
-    heat = heat.reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], axis = 0)
-    plot = sns.heatmap(heat)
-    plot.set_yticklabels(plot.get_yticklabels(), rotation=0, ha="right")
-    plot.set(ylabel = 'Day of Week', xlabel = 'Hour', title = 'Heatmap of Average Availability')
-    st.pyplot(fig)
+    if len(filtered) != 0:
+        sns.set_theme(style="darkgrid")
+        fig = plt.figure(figsize = (11.7,7))
+        plot = sns.lineplot(data = filtered, x = filtered.datetime, y = 'percentAvailable', hue = 'name')
+        plot.set(xlabel='Time', ylabel='Percent Available', title = 'Deck Availability by Time')
+        plot.xaxis.set_major_locator(ticker.MultipleLocator(1))
+        plot.set_xticklabels(plot.get_xticklabels(), rotation=40, ha="right")
+        st.pyplot(fig)
+    else:
+        st.write('Select one or more decks to see the heatmap and graph, here.')
+    try:
+        fig = plt.figure(figsize = (11.7,7))
+        filtered['hour'] = filtered.datetime.dt.hour
+        filtered['dayofweek'] = filtered.datetime.dt.day_name()
+        heat = filtered.pivot_table('percentAvailable', ['dayofweek'], 'hour')
+        heat = heat.reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], axis = 0)
+        plot = sns.heatmap(heat)
+        plot.set_yticklabels(plot.get_yticklabels(), rotation=0, ha="right")
+        plot.set(ylabel = 'Day of Week', xlabel = 'Hour', title = 'Heatmap of Average Availability')
+        st.pyplot(fig)
+    except ValueError:
+        pass
 
 def page3():
     st.markdown("# Latest Availability")
@@ -168,16 +172,16 @@ def page3():
     average_avail = most_current.percentAvailable.mean()
 
     st.markdown("""### Availability per Deck
-    Small number is difference from the average, {}.""".format(average_avail))
+    Small number is difference from the average, {}.""".format(round(average_avail, 3)))
     col1, col2 = st.columns(2)
     i = 0
 
     def render_metric(name):
             dif = metric_dict[name] - average_avail
             if dif != 0:
-                st.metric(label = name, value = metric_dict[name], delta = dif)
+                st.metric(label = name, value = round(metric_dict[name], 3), delta = round(dif,3))
             else:
-                st.metric(label = name, value = metric_dict[name], delta = dif, delta_color = 'off')
+                st.metric(label = name, value = round(metric_dict[name], 3), delta = round(dif, 3), delta_color = 'off')
 
     for name in most_current.name.unique():
         if i % 2 == 0:
