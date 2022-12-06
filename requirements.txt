@@ -9,5 +9,5 @@ pymongo==4.2.0
 seaborn==0.12.1
 SQLAlchemy==1.4.44
 sseclient==0.0.27
-streamlit==1.12.2~
+streamlit==1.12.2
 matplotlib==3.6.1
