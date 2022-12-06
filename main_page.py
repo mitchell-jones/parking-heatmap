@@ -132,9 +132,9 @@ def page2():
     st.pyplot(fig)
     
     fig = plt.figure(figsize = (11.7,7))
-    data['hour'] = data.datetime.dt.hour
-    data['dayofweek'] = data.datetime.dt.day_name()
-    heat = data.pivot_table('percentAvailable', ['dayofweek'], 'hour')
+    filtered['hour'] = filtered.datetime.dt.hour
+    filtered['dayofweek'] = filtered.datetime.dt.day_name()
+    heat = filtered.pivot_table('percentAvailable', ['dayofweek'], 'hour')
     heat = heat.reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], axis = 0)
     plot = sns.heatmap(heat)
     plot.set_yticklabels(plot.get_yticklabels(), rotation=0, ha="right")
