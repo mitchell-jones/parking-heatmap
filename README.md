@@ -1,8 +1,8 @@
 # Parking Data
 ## Introduction
-Scrapes data from ![UNC Charlotte's parking availability tracker](https://parkingavailability.charlotte.edu/) every 15 minutes and appends it to a table in MongoDB via a script running on my Raspberry Pi. Data is then ingested into Streamlit for exploration of my uptime statistics, as well as current availability and historical analysis.
+Scrapes data from [UNC Charlotte's parking availability tracker](https://parkingavailability.charlotte.edu/) every 15 minutes and appends it to a table in MongoDB via a script running on my Raspberry Pi. Data is then ingested into Streamlit for exploration of my uptime statistics, as well as current availability and historical analysis.
 
-You can access the Streamlit app ![here](https://mitchell-jones-parking-heatmap-main-page-v2u3cp.streamlit.app/) - also, if you're viewing this directly, and would like to connect with me, feel free to reach out via my ![LinkedIn](https://www.linkedin.com/in/mitchelljones49/)
+You can access the Streamlit app [here](https://mitchell-jones-parking-heatmap-main-page-v2u3cp.streamlit.app/) - also, if you're viewing this directly, and would like to connect with me, feel free to reach out via my [LinkedIn](https://www.linkedin.com/in/mitchelljones49/)
 
 ## Data loading architecture & Workflow
 Python script on raspberry pi writes to MongoDB -> MongoDB Atlas holds data in cloud -> Streamlit app accesses mongoDB directly
