@@ -7,6 +7,10 @@ import pymongo
 import certifi
 from datetime import timedelta
 import numpy as np
+import matplotlib.ticker as ticker
+
+st.set_page_config(page_title="Streamlit UNCC Parking", layout="wide")
+
 
 def get_client():
     # Get user, pass
@@ -19,7 +23,7 @@ def get_client():
 
     return client
 
-@st.cache
+@st.cache(allow_output_mutation = True)
 def load_data():
     client = get_client()
 
@@ -39,7 +43,6 @@ data = load_data()
 
 def main_page():
     st.markdown("# About")
-    st.sidebar.markdown("# Uptime Statistics")
     st.markdown("""This personal project web-scrapes UNC Charlotte's parking availability page via a scheduled task on a Raspberry Pi. 
     From there, the Pi uploads the data into MongoDB, which is directly accessed by this Streamlit App, providing an interactive front-end for EDA.""")
     st.markdown("Interested in connecting with me after seeing this? You can contact me via my [LinkedIn](https://www.linkedin.com/in/mitchelljones49/).")
@@ -62,7 +65,7 @@ def main_page():
     
     grouped_counts = filtered.groupby('date').count()
     sns.set_palette(sns.dark_palette("seagreen"))
-    fig = plt.figure()
+    fig = plt.figure(figsize = (11.7,7))
     ax = sns.lineplot(data = grouped_counts, x = 'date', y = 'percentAvailable')
     ax.set(ylabel = 'Number of Records')
     ax.set_xticklabels(ax.get_xticklabels(), rotation=40, ha="right")
@@ -96,14 +99,50 @@ def main_page():
     st.write(filtered.head(5))
 
 def page2():
+    st.sidebar.markdown('# Filters')
     st.markdown("# Historical Analysis")
-    st.sidebar.markdown("# Historical Analysis")
+    st.markdown("This page shows analysis on the historical trends of each of the parking deck - allowing you to visualize the parking deck availability levels over time, as well as a heatmap of the busiest hours per week")
+    st.markdown("For especially interesting insights, observe how South Village Deck acts differently than Union Deck Lower, since South Village Deck is primarily a deck for resident's cars, while Union Deck Lower is for commuters and main campus access.")
     with st.sidebar:
-        st.selectbox()
+        if not st.checkbox('Display All Decks'):
+            selected_opts = st.multiselect("Select Decks to Include in Graph", options = data.name.unique(), default=['Union Deck Lower', 'South Village Deck'])
+            filtered = data[data['name'].isin(selected_opts)]
+        else:
+            filtered = data.copy()
+
+    min_date = data.date.min() - timedelta(1)
+    max_date = data.date.max() + timedelta(1)
+
+    col1, col2 =  st.columns(2)
+    with col1:
+        begin_date = st.date_input('Select the beginning of the date range.', value = min_date, 
+        min_value = min_date, max_value = max_date)
+    with col2:
+        end_date = st.date_input('Select the end of the date range.', value = max_date, 
+        min_value = min_date, max_value = max_date)
+
+    filtered = filtered[(filtered.date > begin_date) & (filtered.date < end_date)]
+
+    sns.set_theme(style="darkgrid")
+    fig = plt.figure(figsize = (11.7,7))
+    plot = sns.lineplot(data = filtered, x = filtered.datetime, y = 'percentAvailable', hue = 'name')
+    plot.set(xlabel='Time', ylabel='Percent Available', title = 'Deck Availability by Time')
+    plot.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    plot.set_xticklabels(plot.get_xticklabels(), rotation=40, ha="right")
+    st.pyplot(fig)
+    
+    fig = plt.figure(figsize = (11.7,7))
+    data['hour'] = data.datetime.dt.hour
+    data['dayofweek'] = data.datetime.dt.day_name()
+    heat = data.pivot_table('percentAvailable', ['dayofweek'], 'hour')
+    heat = heat.reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], axis = 0)
+    plot = sns.heatmap(heat)
+    plot.set_yticklabels(plot.get_yticklabels(), rotation=0, ha="right")
+    plot.set(ylabel = 'Day of Week', xlabel = 'Hour', title = 'Heatmap of Average Availability')
+    st.pyplot(fig)
 
 def page3():
     st.markdown("# Latest Availability")
-    st.sidebar.markdown("# Latest Availability")
 
     newest_write = data.datetime.max()
     st.markdown("This page shows the parking deck availability by deck, as of {}.".format(newest_write))
@@ -119,7 +158,7 @@ def page3():
         palette = sns.dark_palette('seagreen', len(values))
         return np.array(palette).take(indices, axis=0)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize = (11.7,7))
     ax = sns.barplot(data = most_current, y = 'name', x = 'percentAvailable', 
         palette = colors_from_values(most_current['percentAvailable'], None)).set(ylabel = 'Deck', title = 'Percent Available by Deck', xlabel = 'Percent Available')
     st.pyplot(fig)
@@ -129,7 +168,7 @@ def page3():
     average_avail = most_current.percentAvailable.mean()
 
     st.markdown("""### Availability per Deck
-    Small number is difference from the average, {}.""".format(average_avail)
+    Small number is difference from the average, {}.""".format(average_avail))
     col1, col2 = st.columns(2)
     i = 0
 
@@ -157,5 +196,6 @@ page_names_to_funcs = {
     "Latest Availability": page3,
 }
 
+st.sidebar.markdown('# Page Selection')
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
 page_names_to_funcs[selected_page]()
