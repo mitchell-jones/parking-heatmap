@@ -8,9 +8,15 @@ import certifi
 from datetime import timedelta
 import numpy as np
 import matplotlib.ticker as ticker
+import time
+from datetime import datetime
+
+replace_array = [0,15,30,45]
 
 st.set_page_config(page_title="Streamlit UNCC Parking", layout="wide")
-
+timenow = datetime.now()
+replace_time = replace_array[timenow.minute // 15]
+timenow = timenow.replace(minute = replace_time, second = 0, microsecond = 0)
 
 def get_client():
     # Get user, pass
@@ -24,7 +30,7 @@ def get_client():
     return client
 
 @st.cache(allow_output_mutation = True)
-def load_data():
+def load_data(timenow):
     client = get_client()
 
     # Loading data
@@ -39,7 +45,7 @@ def load_data():
     imported_data.date = imported_data.datetime.dt.date
     return imported_data
 
-data = load_data()
+data = load_data(timenow)
 
 def main_page():
     st.markdown("# About")
@@ -102,7 +108,7 @@ def page2():
     st.sidebar.markdown('# Filters')
     st.markdown("# Historical Analysis")
     st.markdown("This page shows analysis on the historical trends of each of the parking deck - allowing you to visualize the parking deck availability levels over time, as well as a heatmap of the busiest hours per week")
-    st.markdown("For especially interesting insights, observe how South Village Deck acts differently than Union Deck Lower, since South Village Deck is primarily a deck for resident's cars, while Union Deck Lower is for commuters and main campus access.")
+    st.markdown("For especially interesting insights, observe how South Village Deck acts differently than Union Deck Lower, since South Village Deck is primarily a deck for resident's cars, while Union Deck Lower is for commuters and main campus access. Over the period of November 27-29th, South Village Deck fills up sooner as students return to campus (filling up residential decks) before commuters, who fill up commuter decks like Union Deck Lower.")
     with st.sidebar:
         if not st.checkbox('Display All Decks'):
             selected_opts = st.multiselect("Select Decks to Include in Graph", options = data.name.unique(), default=['Union Deck Lower', 'South Village Deck'])
