@@ -51,7 +51,7 @@ def main_page():
     st.markdown("# About")
     st.markdown("""This personal project web-scrapes UNC Charlotte's parking availability page via a scheduled task on a Raspberry Pi. 
     From there, the Pi uploads the data into MongoDB, which is directly accessed by this Streamlit App, providing an interactive front-end for EDA.""")
-    st.markdown("Interested in connecting with me after seeing this? You can contact me via my [LinkedIn](https://www.linkedin.com/in/mitchelljones49/), or view the source code on [GitHub](https://github.com/mitchell-jones/parking-heatmap)")
+    st.markdown("Interested in connecting with me after seeing this? You can contact me via my [LinkedIn](https://www.linkedin.com/in/mitchelljones49/), or view the source code on [GitHub](https://github.com/mitchell-jones/parking-heatmap).")
     st.markdown("# Uptime Statistics")
     st.markdown("""This page shows statistics on uptime - we can determine these statistics by aggregating and examining the number of and times of the "writes" to the MongoDB.""")
 
